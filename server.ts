@@ -46,28 +46,81 @@ async function startServer() {
     });
   });
 
-  // Solver Status & Generation API (Interface for future Python OR-Tools microservice)
-  app.get('/api/solver/status', (_req, res) => {
-    // Truthfully report solver connection state
-    res.json({
-      configured: false,
-      solverEngine: 'Google OR-Tools (CP-SAT v9.8)',
-      status: 'not_configured',
-      serviceUrl: null,
-      message:
-        'Automated OR-Tools solver backend service is not yet connected. Integration adapter is ready for external microservice.',
-    });
+  // Solver Status & Generation API (Communicates with Python OR-Tools microservice)
+  app.get('/api/solver/status', async (_req, res) => {
+    const solverUrl = process.env.SOLVER_SERVICE_URL;
+    if (!solverUrl) {
+      return res.json({
+        configured: false,
+        solverEngine: 'Google OR-Tools CP-SAT',
+        status: 'not_configured',
+        serviceUrl: null,
+        message:
+          'Solver not configured yet. Deploy solver-service to Google Cloud Run and set SOLVER_SERVICE_URL when ready.',
+      });
+    }
+
+    try {
+      const response = await fetch(`${solverUrl}/health`, { signal: AbortSignal.timeout(3000) });
+      if (response.ok) {
+        const data = await response.json();
+        return res.json({
+          configured: true,
+          solverEngine: data.solverEngine || 'Google OR-Tools CP-SAT',
+          status: 'ready',
+          serviceUrl: solverUrl,
+          message: 'Automated Python OR-Tools CP-SAT solver service is connected and operational.',
+        });
+      }
+      return res.json({
+        configured: false,
+        solverEngine: 'Google OR-Tools CP-SAT',
+        status: 'offline',
+        serviceUrl: solverUrl,
+        message: `Solver service responded with HTTP ${response.status}.`,
+      });
+    } catch (err: any) {
+      return res.json({
+        configured: false,
+        solverEngine: 'Google OR-Tools CP-SAT',
+        status: 'offline',
+        serviceUrl: solverUrl,
+        message: `Unable to reach solver service: ${err.message}`,
+      });
+    }
   });
 
-  app.post('/api/solver/generate', (_req, res) => {
-    // The user explicitly requested:
-    // "The Generate Timetable button must not fabricate results, call Gemini as a substitute for a solver, or use a toy random timetable. Until the actual solver service is connected, show a clear message that automated scheduling is not yet configured and keep the feature disabled."
-    res.status(503).json({
-      success: false,
-      status: 'not_configured',
-      error:
-        'Automated scheduling engine is not yet connected. Connect an external OR-Tools solver microservice to enable automatic timetable solving.',
-    });
+  app.post('/api/solver/generate', async (req, res) => {
+    const solverUrl = process.env.SOLVER_SERVICE_URL;
+    if (!solverUrl) {
+      return res.status(503).json({
+        success: false,
+        status: 'not_configured',
+        error:
+          'Solver not configured yet. Deploy solver-service to Google Cloud Run and set SOLVER_SERVICE_URL to enable automated solving.',
+      });
+    }
+
+    try {
+      const solverApiKey = process.env.SOLVER_API_KEY || '';
+      const response = await fetch(`${solverUrl}/solve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': solverApiKey,
+        },
+        body: JSON.stringify(req.body),
+      });
+
+      const data = await response.json();
+      return res.status(response.status).json(data);
+    } catch (err: any) {
+      return res.status(502).json({
+        success: false,
+        status: 'error',
+        error: `Failed to proxy request to solver service: ${err.message}`,
+      });
+    }
   });
 
   // Server-side AI Feasibility Audit (Gemini intelligence for deep constraint inspection)

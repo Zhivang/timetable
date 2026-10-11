@@ -257,7 +257,7 @@ export const DashboardSection: React.FC<DashboardSectionProps> = ({ onNavigate }
                 <span>Solver Link</span>
                 <span className="inline-flex items-center gap-1 text-amber-600 font-medium">
                   <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                  External Adapter Standby
+                  Solver not configured yet
                 </span>
               </div>
             </div>

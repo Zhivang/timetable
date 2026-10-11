@@ -39,10 +39,10 @@ export const GenerateTimetableSection: React.FC = () => {
   // Solver Engine Status
   const [solverStatus, setSolverStatus] = useState<SolverStatusResponse>({
     configured: false,
-    solverEngine: 'Google OR-Tools (CP-SAT v9.8)',
+    solverEngine: 'Google OR-Tools CP-SAT',
     status: 'not_configured',
     serviceUrl: null,
-    message: 'Automated OR-Tools solver backend service is not yet connected.',
+    message: 'Solver not configured yet. Deploy solver-service to Google Cloud Run and configure SOLVER_SERVICE_URL when ready.',
   });
   const [checkingSolver, setCheckingSolver] = useState(false);
 
@@ -144,7 +144,11 @@ export const GenerateTimetableSection: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-              {solverStatus.status === 'not_configured' ? 'Service Standby' : solverStatus.status}
+              {solverStatus.status === 'not_configured'
+                ? 'Solver not configured yet'
+                : solverStatus.status === 'ready'
+                ? 'Solver Operational'
+                : 'Solver Offline'}
             </span>
             <button
               type="button"
@@ -173,7 +177,9 @@ export const GenerateTimetableSection: React.FC = () => {
           <div className="flex items-center gap-2 text-xs text-slate-400">
             <Lock className="w-4 h-4 text-amber-400 shrink-0" />
             <span>
-              Automated Generation Disabled: Connect Python OR-Tools microservice via server endpoint.
+              {!solverStatus.configured
+                ? 'Automated Generation Disabled: Solver not configured yet.'
+                : 'Ready to generate timetable using CP-SAT solver.'}
             </span>
           </div>
 
@@ -182,7 +188,9 @@ export const GenerateTimetableSection: React.FC = () => {
             disabled
             className="px-5 py-2.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-80"
           >
-            Generate Optimal Timetable (Solver Offline)
+            {!solverStatus.configured
+              ? 'Generate Timetable (Solver not configured yet)'
+              : 'Generate Optimal Timetable'}
           </button>
         </div>
       </div>

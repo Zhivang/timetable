@@ -1,0 +1,20 @@
+[
+  "solver-service/tests/test_api_endpoints.py::test_health_endpoint",
+  "solver-service/tests/test_api_endpoints.py::test_solve_endpoint_auth_enforcement",
+  "solver-service/tests/test_api_endpoints.py::test_solve_endpoint_validation_error_handling",
+  "solver-service/tests/test_hard_constraints.py::test_classroom_capacity_is_strictly_respected",
+  "solver-service/tests/test_hard_constraints.py::test_cohort_conflicts_never_occur",
+  "solver-service/tests/test_hard_constraints.py::test_combined_sessions_appear_consistently_for_all_participating_cohorts",
+  "solver-service/tests/test_hard_constraints.py::test_dedicated_lab_requirements_honored",
+  "solver-service/tests/test_hard_constraints.py::test_feasible_dataset_solves_successfully",
+  "solver-service/tests/test_hard_constraints.py::test_locked_sessions_remain_fixed",
+  "solver-service/tests/test_hard_constraints.py::test_required_weekly_teaching_periods_are_exact",
+  "solver-service/tests/test_hard_constraints.py::test_room_conflicts_never_occur",
+  "solver-service/tests/test_hard_constraints.py::test_teacher_conflicts_never_occur",
+  "solver-service/tests/test_hard_constraints.py::test_unavailable_teachers_and_rooms_never_scheduled",
+  "solver-service/tests/test_infeasibility.py::test_impossible_room_unavailability_returns_infeasible",
+  "solver-service/tests/test_infeasibility.py::test_impossible_teacher_overload_returns_infeasible_never_fabricates",
+  "solver-service/tests/test_infeasibility.py::test_infeasible_diagnostics_evaluates_what_if_and_reports_real_tests",
+  "solver-service/tests/test_soft_constraints.py::test_soft_preferences_integer_weighting",
+  "solver-service/tests/test_soft_constraints.py::test_travel_time_between_different_buildings_is_enforced"
+]
