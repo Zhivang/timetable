@@ -1,0 +1,7 @@
+{
+  "name": "Department Timetable Planner",
+  "description": "Full-stack university department timetable scheduling application with academic period configurations, room constraints, cohorts, teacher availability, and solver-ready architecture.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

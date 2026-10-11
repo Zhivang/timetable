@@ -1,0 +1,525 @@
+{
+  "entities": {
+    "Admin": {
+      "title": "Admin",
+      "description": "Authorized administrator user profile",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Administrator email address"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin"],
+          "description": "User role"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp string of creation"
+        }
+      },
+      "required": ["email", "role"]
+    },
+    "AcademicSetting": {
+      "title": "AcademicSetting",
+      "description": "Department timetable schedule periods and working day parameters",
+      "type": "object",
+      "properties": {
+        "departmentName": {
+          "type": "string",
+          "description": "Name of the academic department"
+        },
+        "semester": {
+          "type": "string",
+          "description": "Current semester or term"
+        },
+        "workingDays": {
+          "type": "array",
+          "description": "List of active working days in the timetable cycle"
+        },
+        "periods": {
+          "type": "array",
+          "description": "List of lecture periods with exact start and end times"
+        },
+        "lunchBreak": {
+          "type": "object",
+          "description": "Non-teaching lunch break window"
+        },
+        "interPeriodGapMinutes": {
+          "type": "number",
+          "description": "Minutes between adjacent lecture periods"
+        },
+        "transitionBufferSameBuilding": {
+          "type": "number",
+          "description": "Minutes needed for room transition in the same building"
+        },
+        "transitionBufferDifferentBuilding": {
+          "type": "number",
+          "description": "Minutes needed for room transition across different buildings"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last updated timestamp"
+        }
+      },
+      "required": ["departmentName", "workingDays", "periods"]
+    },
+    "Building": {
+      "title": "Building",
+      "description": "Campus building housing classrooms and facilities",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Name of the building"
+        },
+        "code": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "Short code identifier"
+        },
+        "campusZone": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Campus zone or location quadrant"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Building notes or description"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["name", "code"]
+    },
+    "Classroom": {
+      "title": "Classroom",
+      "description": "Lecture room or laboratory with capacity and capability attributes",
+      "type": "object",
+      "properties": {
+        "buildingId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "ID of the parent building"
+        },
+        "buildingName": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Name of the parent building"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Classroom identifier or number"
+        },
+        "capacity": {
+          "type": "number",
+          "description": "Total integer seating capacity"
+        },
+        "isShared": {
+          "type": "boolean",
+          "description": "Whether shared with other university departments"
+        },
+        "canHostTheory": {
+          "type": "boolean",
+          "description": "Can host standard theory lectures"
+        },
+        "canHostLaptopPractical": {
+          "type": "boolean",
+          "description": "Can host practical sessions using student laptops"
+        },
+        "isDedicatedLab": {
+          "type": "boolean",
+          "description": "Is a dedicated computer or hardware laboratory"
+        },
+        "facilities": {
+          "type": "array",
+          "description": "Available instructional facilities"
+        },
+        "installedSoftware": {
+          "type": "array",
+          "description": "Tags of installed laboratory software and toolchains"
+        },
+        "availability": {
+          "type": "object",
+          "description": "Weekly period availability grid (available, unavailable, unknown)"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["buildingId", "name", "capacity"]
+    },
+    "Cohort": {
+      "title": "Cohort",
+      "description": "Student cohort group attending scheduled subjects",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Name of the cohort"
+        },
+        "degreeProgramme": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Academic programme or degree title"
+        },
+        "academicYear": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Academic year or level"
+        },
+        "studentCount": {
+          "type": "number",
+          "description": "Integer number of enrolled students"
+        },
+        "availabilityRestrictions": {
+          "type": "object",
+          "description": "Specific days or periods when cohort cannot take classes"
+        },
+        "schedulingPreferences": {
+          "type": "object",
+          "description": "Cohort specific constraints and preferences"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["name", "degreeProgramme", "studentCount"]
+    },
+    "CombinedClass": {
+      "title": "CombinedClass",
+      "description": "Combined session grouping multiple cohorts together",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Combined class identifier"
+        },
+        "cohortIds": {
+          "type": "array",
+          "description": "List of participating cohort IDs"
+        },
+        "cohortNames": {
+          "type": "array",
+          "description": "List of participating cohort names"
+        },
+        "expectedAttendance": {
+          "type": "number",
+          "description": "Explicit combined expected attendance figure"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["name", "cohortIds", "expectedAttendance"]
+    },
+    "Teacher": {
+      "title": "Teacher",
+      "description": "Faculty member or instructor",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Teacher full name"
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Teacher university email address"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Academic title or designation"
+        },
+        "department": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Academic department"
+        },
+        "subjectsCanTeach": {
+          "type": "array",
+          "description": "Subject IDs or names teacher is qualified to deliver"
+        },
+        "minWeeklyPeriods": {
+          "type": "number",
+          "description": "Minimum weekly teaching periods constraint"
+        },
+        "maxWeeklyPeriods": {
+          "type": "number",
+          "description": "Maximum weekly teaching periods constraint"
+        },
+        "availability": {
+          "type": "object",
+          "description": "Weekly period availability grid (available, unavailable)"
+        },
+        "preferences": {
+          "type": "object",
+          "description": "Teacher scheduling preferences"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["name", "email"]
+    },
+    "SubjectOffering": {
+      "title": "SubjectOffering",
+      "description": "Subject offering connecting target cohort, teachers, and weekly period requirements",
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "Course or subject code"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Subject title"
+        },
+        "targetType": {
+          "type": "string",
+          "enum": ["cohort", "combined"],
+          "description": "Target group type"
+        },
+        "targetId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Target cohort ID or combined class ID"
+        },
+        "targetName": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Cached display name of target"
+        },
+        "eligibleTeacherIds": {
+          "type": "array",
+          "description": "List of teacher IDs qualified to teach this offering"
+        },
+        "assignedTeacherId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Explicitly fixed teacher ID or null"
+        },
+        "totalPeriodsPerWeek": {
+          "type": "number",
+          "description": "Total teaching periods required each week"
+        },
+        "theoryPeriods": {
+          "type": "number",
+          "description": "Periods requiring theory lecture environment"
+        },
+        "flexiblePracticalPeriods": {
+          "type": "number",
+          "description": "Practical periods compatible with general classroom or lab"
+        },
+        "dedicatedLabPeriods": {
+          "type": "number",
+          "description": "Practical periods requiring dedicated laboratory facilities"
+        },
+        "permissibleBlockLengths": {
+          "type": "array",
+          "description": "Allowable consecutive period block lengths (e.g. 1, 2)"
+        },
+        "requiredSoftware": {
+          "type": "array",
+          "description": "Required laboratory software packages"
+        },
+        "requiredFacilities": {
+          "type": "array",
+          "description": "Required room facilities"
+        },
+        "explicitMeetingPattern": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Optional explicit meeting pattern description"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["code", "name", "targetType", "targetId", "totalPeriodsPerWeek"]
+    },
+    "SchedulingPreference": {
+      "title": "SchedulingPreference",
+      "description": "Optimization weights and soft constraint configurations",
+      "type": "object",
+      "properties": {
+        "minimizeRoomChanges": {
+          "type": "boolean",
+          "description": "Whether to penalize room changes between adjacent periods"
+        },
+        "roomChangeWeight": {
+          "type": "number",
+          "description": "Weight penalty for room changes"
+        },
+        "minimizeBuildingChanges": {
+          "type": "boolean",
+          "description": "Whether to penalize building changes between adjacent periods"
+        },
+        "buildingChangeWeight": {
+          "type": "number",
+          "description": "Weight penalty for building changes"
+        },
+        "avoidConsecutiveTheoryExceeding": {
+          "type": "number",
+          "description": "Threshold of consecutive theory lectures before penalty"
+        },
+        "minimizeTeacherGaps": {
+          "type": "boolean",
+          "description": "Avoid isolated gaps in teacher daily schedules"
+        },
+        "teacherGapWeight": {
+          "type": "number",
+          "description": "Weight penalty for isolated teacher gaps"
+        },
+        "groupTeachingIntoCompactBlocks": {
+          "type": "boolean",
+          "description": "Cluster teaching hours compactly"
+        },
+        "avoidExcessivelyLongStudentDays": {
+          "type": "boolean",
+          "description": "Cap maximum periods per day for cohorts"
+        },
+        "maxStudentPeriodsPerDay": {
+          "type": "number",
+          "description": "Max periods limit per day for cohorts"
+        },
+        "distributeTeachingUniformly": {
+          "type": "boolean",
+          "description": "Spread workload evenly across working days"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["roomChangeWeight", "buildingChangeWeight"]
+    },
+    "TimetableRun": {
+      "title": "TimetableRun",
+      "description": "Timetable generation run status, metadata and schedule slots",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Timetable run title"
+        },
+        "semester": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Academic semester"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["not_configured", "queued", "solving", "solved", "infeasible", "error"],
+          "description": "Current solver execution status"
+        },
+        "statusMessage": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Status explanation or solver diagnostics"
+        },
+        "slots": {
+          "type": "array",
+          "description": "Scheduled class time-slots"
+        },
+        "metrics": {
+          "type": "object",
+          "description": "Schedule quality and utilization metrics"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["title", "status"]
+    }
+  },
+  "firestore": {
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "Authorized administrator user documents"
+    },
+    "/academicSettings/{settingId}": {
+      "schema": "AcademicSetting",
+      "description": "Department academic period settings and configuration"
+    },
+    "/buildings/{buildingId}": {
+      "schema": "Building",
+      "description": "Campus buildings"
+    },
+    "/classrooms/{classroomId}": {
+      "schema": "Classroom",
+      "description": "Classrooms and laboratory facilities"
+    },
+    "/cohorts/{cohortId}": {
+      "schema": "Cohort",
+      "description": "Student cohorts and degree year groups"
+    },
+    "/combinedClasses/{combinedClassId}": {
+      "schema": "CombinedClass",
+      "description": "Combined class groupings of multiple cohorts"
+    },
+    "/teachers/{teacherId}": {
+      "schema": "Teacher",
+      "description": "Faculty teachers and instructors"
+    },
+    "/subjectOfferings/{subjectOfferingId}": {
+      "schema": "SubjectOffering",
+      "description": "Subject offerings and weekly period requirements"
+    },
+    "/schedulingPreferences/{prefId}": {
+      "schema": "SchedulingPreference",
+      "description": "Hard and soft scheduling optimization preferences"
+    },
+    "/timetableRuns/{runId}": {
+      "schema": "TimetableRun",
+      "description": "Timetable solver run outputs and diagnostic states"
+    }
+  }
+}
